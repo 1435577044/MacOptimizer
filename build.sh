@@ -110,7 +110,7 @@ echo -e "${YELLOW}[4/7] 正在编译 (Apple Silicon)...${NC}"
 
 echo -n "  - 编译 arm64... "
 swiftc -O \
-    -target arm64-apple-macos13.0 \
+    -target arm64-apple-macos12.0 \
     -sdk $(xcrun --sdk macosx --show-sdk-path) \
     -parse-as-library \
     -o "${BUILD_DIR}/${BUNDLE_NAME}/Contents/MacOS/${EXECUTABLE_NAME}" \
