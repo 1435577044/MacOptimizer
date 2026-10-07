@@ -1,0 +1,157 @@
+name: Release 正式版 DMG
+
+# 用途：产出正式发布包（Intel + Apple Silicon 双架构 DMG）。
+# 部署目标固定为 macOS 12.0 —— 面向 Intel Mac（如 MacBookPro16,4 / 16" 2019）。
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号（不含 v，如 5.0.1）'
+        required: true
+        default: '5.0.1'
+
+jobs:
+  release:
+    name: 打包 v${{ github.event.inputs.version }}
+    runs-on: macos-15
+    timeout-minutes: 90
+
+    steps:
+      - name: 检出源码
+        uses: actions/checkout@v4
+
+      - name: 写入版本号
+        run: |
+          set -euo pipefail
+          VER="${{ github.event.inputs.version }}"
+          echo "目标版本: ${VER}"
+          # Info.plist: CFBundleShortVersionString 用 x.y.z，CFBundleVersion 用递增整数
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${VER}" AppUninstaller/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${VER}" AppUninstaller/Info.plist
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" AppUninstaller/Info.plist
+          /usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" AppUninstaller/Info.plist
+
+      - name: 收集源文件（bash 3.2 兼容，不用 mapfile）
+        run: |
+          set -euo pipefail
+          find AppUninstaller -name '*.swift' -print0 > build-sources.nul
+          tr '\0' '\n' < build-sources.nul > build-sources.txt
+          echo "Swift 文件数: $(wc -l < build-sources.txt)"
+          if grep -q ' ' build-sources.txt; then
+            echo "[FAIL] 存在含空格的路径，xargs 会拆错"
+            grep ' ' build-sources.txt
+            exit 1
+          fi
+
+      - name: 编译 arm64（Apple Silicon）
+        run: |
+          set -uo pipefail
+          mkdir -p build/arm64
+          xargs swiftc -O \
+            -target arm64-apple-macos12.0 \
+            -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            -o build/arm64/AppUninstaller \
+            < build-sources.txt 2>&1 | tee log-arm64.txt
+          RC=${PIPESTATUS[0]}
+          [ "$RC" -eq 0 ] || { grep -E "error:" log-arm64.txt | head -40; exit $RC; }
+          echo "arm64 OK"
+
+      - name: 编译 x86_64（Intel）
+        run: |
+          set -uo pipefail
+          mkdir -p build/x86_64
+          xargs swiftc -O \
+            -target x86_64-apple-macos12.0 \
+            -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            -o build/x86_64/AppUninstaller \
+            < build-sources.txt 2>&1 | tee log-x86_64.txt
+          RC=${PIPESTATUS[0]}
+          [ "$RC" -eq 0 ] || { grep -E "error:" log-x86_64.txt | head -40; exit $RC; }
+          echo "x86_64 OK"
+
+      - name: 校验部署目标
+        run: |
+          set -euo pipefail
+          for A in x86_64 arm64; do
+            MINOS=$(otool -l "build/${A}/AppUninstaller" \
+                    | grep -A5 -E "LC_BUILD_VERSION|LC_VERSION_MIN_MACOSX" \
+                    | grep minos | head -1 | awk '{print $2}')
+            echo "${A}: minos = ${MINOS}"
+            case "${MINOS}" in
+              12.*) ;;
+              *) echo "[FAIL] ${A} minos=${MINOS}，不是 12.x"; exit 1 ;;
+            esac
+          done
+          echo "[OK] 两个架构 minos 均为 12.x"
+
+      - name: 组装 Universal app 并签名
+        run: |
+          set -euo pipefail
+          lipo -create -output build/AppUninstaller \
+            build/x86_64/AppUninstaller build/arm64/AppUninstaller
+          echo "架构: $(lipo -archs build/AppUninstaller)"
+
+          APP="build/Mac优化大师.app"
+          mkdir -p "${APP}/Contents/MacOS" "${APP}/Contents/Resources"
+          cp build/AppUninstaller "${APP}/Contents/MacOS/"
+          cp AppUninstaller/Info.plist "${APP}/Contents/"
+          cp -R AppUninstaller/Localizations/*.lproj "${APP}/Contents/Resources/" 2>/dev/null || true
+          [ -f AppUninstaller/AppIcon.icns ] \
+            && cp AppUninstaller/AppIcon.icns "${APP}/Contents/Resources/" || true
+          find AppUninstaller -maxdepth 1 -type f \
+            \( -name '*.png' -o -name '*.jpg' -o -name '*.m4a' -o -name '*.mp4' -o -name '*.icns' \) \
+            -exec cp {} "${APP}/Contents/Resources/" \; || true
+
+          codesign --force --deep --sign - "${APP}"
+          codesign -dv "${APP}" 2>&1 | head -3
+          echo "签名完成（ad-hoc，未公证）"
+
+      - name: 生成两个架构的 DMG
+        run: |
+          set -euo pipefail
+          VER="${{ github.event.inputs.version }}"
+          APP="build/Mac优化大师.app"
+
+          make_dmg() {
+            local ARCH="$1"
+            local OUT="build/Mac优化大师_${VER}_${ARCH}.dmg"
+            local STAGE="build/dmgstage_${ARCH}"
+            rm -rf "${STAGE}"; mkdir -p "${STAGE}"
+            # Intel 和 arm64 用同一个 universal app，只是文件名标明架构
+            cp -R "${APP}" "${STAGE}/"
+            ln -s /Applications "${STAGE}/Applications"
+            hdiutil create -volname "Mac优化大师" -srcfolder "${STAGE}" \
+              -ov -format UDZO "${OUT}" > /dev/null
+            rm -rf "${STAGE}"
+            echo "  ✓ ${OUT}"
+          }
+
+          echo "打包 DMG:"
+          make_dmg "AppleSilicon"
+          make_dmg "Intel"
+          ls -lh build/*.dmg
+
+      - name: 上传发布产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: MacOptimizer-v${{ github.event.inputs.version }}-macos12
+          path: |
+            build/*.dmg
+            build/Mac优化大师.app
+          retention-days: 90
+
+      - name: 上传发布说明
+        run: |
+          VER="${{ github.event.inputs.version }}"
+          {
+            echo "## Mac优化大师 v${VER} (macOS 12)"
+            echo
+            echo "- 部署目标：macOS 12.0（面向 Intel Mac）"
+            echo "- 架构：Universal（x86_64 + arm64）"
+            echo "- 签名：ad-hoc，未公证。首次打开请右键 → 打开"
+            echo
+            echo "run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > build/RELEASE_NOTES.md
+          cat build/RELEASE_NOTES.md
+        shell: bash
