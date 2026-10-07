@@ -146,7 +146,6 @@ swiftc \
     -O \
     -target arm64-apple-macos12.0 \
     -sdk $(xcrun --sdk macosx --show-sdk-path) \
-    -parse-as-library \
     -o "${BUILD_DIR}/arm64/${EXECUTABLE_NAME}" \
     "${SWIFT_FILES[@]}"
 echo -e "${GREEN}✓ Apple Silicon 编译完成${NC}"
@@ -157,7 +156,6 @@ swiftc \
     -O \
     -target x86_64-apple-macos12.0 \
     -sdk $(xcrun --sdk macosx --show-sdk-path) \
-    -parse-as-library \
     -o "${BUILD_DIR}/x86_64/${EXECUTABLE_NAME}" \
     "${SWIFT_FILES[@]}"
 echo -e "${GREEN}✓ Intel 编译完成${NC}"
