@@ -136,7 +136,6 @@ build_architecture() {
     swiftc -O \
         -target ${TARGET} \
         -sdk $(xcrun --sdk macosx --show-sdk-path) \
-        -parse-as-library \
         -o "${APP_DIR}/Contents/MacOS/${EXECUTABLE_NAME}" \
         "${SWIFT_FILES[@]}"
     echo -e "${GREEN}OK${NC}"
