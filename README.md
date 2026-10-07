@@ -110,7 +110,7 @@ MacOptimizer is a system optimization tool designed specifically for macOS, feat
 ## 🛠️ Installation & Build
 
 ### System Requirements
-- **macOS 13.0 (Ventura)** or later
+- **macOS 12.0 (Monterey)** or later
 - **Apple Silicon (M1/M2/M3/M4)** or Intel (modify build parameters)
 - **Command Line Tools** (Full Xcode not required)
 
@@ -140,9 +140,9 @@ For Intel Mac, modify `build.sh`:
 
 ```bash
 # Change
--target arm64-apple-macos13.0
+-target arm64-apple-macos12.0
 # To
--target x86_64-apple-macos13.0
+-target x86_64-apple-macos12.0
 ```
 
 ---
@@ -201,7 +201,7 @@ MacOptimizer/
 
 - **Language**: Swift 5.9
 - **UI Framework**: SwiftUI 4.0
-- **Minimum Support**: macOS 13.0 (Ventura)
+- **Minimum Support**: macOS 12.0 (Monterey)
 - **Architecture**: MVVM
 - **Build Tool**: Swift Compiler (swiftc)
 
@@ -330,7 +330,7 @@ Mac优化大师是一款专为 macOS 设计的系统优化工具，采用现代�
 ## 🛠️ 安装与构建
 
 ### 系统要求
-- **macOS 13.0 (Ventura)** 或更高版本
+- **macOS 12.0 (Monterey)** 或更高版本
 - **Apple Silicon (M1/M2/M3/M4)** 或 Intel 芯片（需修改编译参数）
 - **Command Line Tools**（无需安装完整 Xcode）
 
@@ -375,9 +375,9 @@ open build/Mac优化大师.app
 
 ```bash
 # 将
--target arm64-apple-macos13.0
+-target arm64-apple-macos12.0
 # 改为
--target x86_64-apple-macos13.0
+-target x86_64-apple-macos12.0
 ```
 如果觉得对你有帮助，可以点个 star 哦  开发不易，你的支持就是我最大的动力
 
