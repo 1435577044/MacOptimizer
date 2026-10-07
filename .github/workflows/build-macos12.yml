@@ -1,0 +1,122 @@
+name: Build macOS 12 (A2141 验证)
+
+# 目的：在 macOS runner 上真实编译，证明 macos12.0 部署目标可用。
+# 适用机型：A2141 = MacBookPro14,1（13" 2017），官方封顶 macOS 12.7.6。
+
+on:
+  workflow_dispatch:      # 手动触发（推荐第一次这样跑）
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+
+jobs:
+  verify:
+    name: 编译并验证 minos=12
+    # 注意：macos-13 runner 已被 GitHub 移除，macos-14 已弃用。
+    # macos-15 是当前 GA 且带能编 macOS 12 目标的 Xcode。
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: 检出源码
+        uses: actions/checkout@v4
+
+      - name: 打印工具链版本
+        run: |
+          echo "### runner: $(uname -sr)"
+          swift --version 2>&1 | head -3
+          xcodebuild -version
+          echo "### SDK: $(xcrun --sdk macosx --show-sdk-version)"
+          echo "### SDK 路径: $(xcrun --sdk macosx --show-sdk-path)"
+
+      - name: 确认 SDK 支持 macOS 12 部署目标
+        run: |
+          set -euo pipefail
+          SDK=$(xcrun --sdk macosx --show-sdk-version)
+          echo "SDK 版本: ${SDK}"
+          # Xcode 26 的 macOS SDK 覆盖 11-26；16.x 覆盖 10.13+
+          echo "无论哪个版本，macOS 12 都在支持范围内。"
+
+      - name: 编译 x86_64（Intel，A2141 需要）
+        run: |
+          set -euo pipefail
+          # 用数组传参，避免中文/空格路径被拆开
+          mapfile -d '' SWIFT_FILES < <(find AppUninstaller -name '*.swift' -print0)
+          echo "Swift 文件数: ${#SWIFT_FILES[@]}"
+          mkdir -p build/x86_64
+          swiftc -O \
+            -target x86_64-apple-macos12.0 \
+            -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            -parse-as-library \
+            -o build/x86_64/AppUninstaller \
+            "${SWIFT_FILES[@]}"
+          echo "x86_64 编译成功"
+          ls -lh build/x86_64/AppUninstaller
+
+      - name: 编译 arm64（可选，仅为保证不破坏 M 芯片用户）
+        run: |
+          set -euo pipefail
+          mapfile -d '' SWIFT_FILES < <(find AppUninstaller -name '*.swift' -print0)
+          mkdir -p build/arm64
+          swiftc -O \
+            -target arm64-apple-macos12.0 \
+            -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            -parse-as-library \
+            -o build/arm64/AppUninstaller \
+            "${SWIFT_FILES[@]}"
+          echo "arm64 编译成功"
+
+      - name: 合并 Universal 二进制
+        run: |
+          set -euo pipefail
+          lipo -create -output build/AppUninstaller \
+            build/x86_64/AppUninstaller build/arm64/AppUninstaller
+          echo "合并架构: $(lipo -archs build/AppUninstaller)"
+
+      - name: 断言部署目标确为 macOS 12
+        run: |
+          set -euo pipefail
+          echo "### LC_BUILD_VERSION 明细"
+          otool -l build/AppUninstaller \
+            | grep -A5 -E "LC_BUILD_VERSION|LC_VERSION_MIN_MACOSX"
+          MINOS=$(otool -l build/AppUninstaller \
+                  | grep -A5 -E "LC_BUILD_VERSION|LC_VERSION_MIN_MACOSX" \
+                  | grep minos | head -1 | awk '{print $2}')
+          echo "### 检测到 minos = ${MINOS}"
+          case "${MINOS}" in
+            12.*) echo "PASS: minos 为 ${MINOS}" ;;
+            *)    echo "FAIL: 期望 12.x，实际 ${MINOS}"; exit 1 ;;
+          esac
+
+      - name: 组装 .app 并签名
+        run: |
+          set -euo pipefail
+          APP="build/Mac优化大师.app"
+          mkdir -p "${APP}/Contents/MacOS" "${APP}/Contents/Resources"
+          cp build/AppUninstaller "${APP}/Contents/MacOS/"
+          cp AppUninstaller/Info.plist "${APP}/Contents/"
+          cp -R AppUninstaller/Localizations/*.lproj "${APP}/Contents/Resources/" 2>/dev/null || true
+          [ -f AppUninstaller/AppIcon.icns ] \
+            && cp AppUninstaller/AppIcon.icns "${APP}/Contents/Resources/" || true
+          # 资源里含大量非 ASCII 文件名，逐个拷，避免 glob 失败中断
+          find AppUninstaller -maxdepth 1 -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.m4a' -o -name '*.mp4' \) \
+            -exec cp {} "${APP}/Contents/Resources/" \; || true
+          codesign --force --deep --sign - "${APP}"
+          echo "组装并签名完成"
+
+      - name: 运行产物验证脚本
+        run: bash verify_macos12.sh "build/Mac优化大师.app"
+
+      - name: 上传 Intel-only 版本（A2141 直接用这个）
+        uses: actions/upload-artifact@v4
+        with:
+          name: MacOptimizer-macos12-intel
+          path: build/x86_64/AppUninstaller
+          retention-days: 30
+
+      - name: 上传 Universal .app
+        uses: actions/upload-artifact@v4
+        with:
+          name: MacOptimizer-macos12-universal-app
+          path: build/Mac优化大师.app
+          retention-days: 30
