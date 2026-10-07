@@ -112,7 +112,6 @@ echo -n "  - 编译 arm64... "
 swiftc -O \
     -target arm64-apple-macos12.0 \
     -sdk $(xcrun --sdk macosx --show-sdk-path) \
-    -parse-as-library \
     -o "${BUILD_DIR}/${BUNDLE_NAME}/Contents/MacOS/${EXECUTABLE_NAME}" \
     "${SWIFT_FILES[@]}"
 echo -e "${GREEN}OK${NC}"
