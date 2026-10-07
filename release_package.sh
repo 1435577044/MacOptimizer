@@ -31,56 +31,18 @@ BUNDLE_NAME="${APP_NAME}.app"
 BUILD_DIR="build_release"
 SOURCE_DIR="AppUninstaller"
 
-# 源文件列表 (与 build.sh 保持一致)
-SWIFT_FILES=(
-    "${SOURCE_DIR}/Models.swift"
-    "${SOURCE_DIR}/LocalizationManager.swift"
-    "${SOURCE_DIR}/ConcurrentScanner.swift"
-    "${SOURCE_DIR}/ScanServiceManager.swift"
-    "${SOURCE_DIR}/AppScanner.swift"
-    "${SOURCE_DIR}/ResidualFileScanner.swift"
-    "${SOURCE_DIR}/FileRemover.swift"
-    "${SOURCE_DIR}/DiskSpaceManager.swift"
-    "${SOURCE_DIR}/DiskUsageView.swift"
-    "${SOURCE_DIR}/Styles.swift"
-    "${SOURCE_DIR}/LargeFileScanner.swift"
-    "${SOURCE_DIR}/LargeFileView.swift"
-    "${SOURCE_DIR}/LargeFileDetailsSplitView.swift"
-    "${SOURCE_DIR}/TrashView.swift"
-    "${SOURCE_DIR}/DeepCleanScanner.swift"
-    "${SOURCE_DIR}/DeepCleanView.swift"
-    "${SOURCE_DIR}/TrashDetailsSplitView.swift"
-    "${SOURCE_DIR}/FileExplorerService.swift"
-    "${SOURCE_DIR}/FileExplorerView.swift"
-    "${SOURCE_DIR}/SystemMonitorService.swift"
-    "${SOURCE_DIR}/ProcessService.swift"
-    "${SOURCE_DIR}/PortScannerService.swift"
-    "${SOURCE_DIR}/MonitorView.swift"
-    "${SOURCE_DIR}/ContentView.swift"
-    "${SOURCE_DIR}/AppDetailView.swift"
-    "${SOURCE_DIR}/AppUninstallerView.swift"
-    "${SOURCE_DIR}/NavigationSidebar.swift"
-    "${SOURCE_DIR}/JunkCleaner.swift"
-    "${SOURCE_DIR}/JunkCleanerView.swift"
-    "${SOURCE_DIR}/SystemOptimizer.swift"
-    "${SOURCE_DIR}/MaintenanceView.swift"
-    "${SOURCE_DIR}/OptimizerView.swift"
-    "${SOURCE_DIR}/MalwareScanner.swift"
-    "${SOURCE_DIR}/MalwareView.swift"
-    "${SOURCE_DIR}/PrivacyScannerService.swift"
-    "${SOURCE_DIR}/PrivacyView.swift"
-    "${SOURCE_DIR}/SmartCleanerService.swift"
-    "${SOURCE_DIR}/CircularActionButton.swift"
-    "${SOURCE_DIR}/SmartCleanerView.swift"
-    "${SOURCE_DIR}/SmartScanLegacySupport.swift"
-    "${SOURCE_DIR}/ShredderService.swift"
-    "${SOURCE_DIR}/ShredderView.swift"
-    "${SOURCE_DIR}/ShredderComponents.swift"
-    "${SOURCE_DIR}/AppUninstallerApp.swift"
-    "${SOURCE_DIR}/UpdateCheckerService.swift"
-    "${SOURCE_DIR}/UpdatePopupView.swift"
-    "${SOURCE_DIR}/SettingsView.swift"
-)
+# 源文件列表：自动扫描，避免硬编码清单漏文件
+# （原为 47 项硬编码清单，实际有 108 个 swift 文件，会漏掉 AppDelegate 等核心文件）
+SWIFT_FILES=()
+while IFS= read -r -d '' file; do
+    SWIFT_FILES+=("$file")
+done < <(find "${SOURCE_DIR}" -name "*.swift" -print0)
+
+if [ ${#SWIFT_FILES[@]} -eq 0 ]; then
+    echo -e "${RED}错误: 找不到源文件${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✓ 源文件检查通过 (找到 ${#SWIFT_FILES[@]} 个文件)${NC}"
 
 # 创建 App Bundle 的函数
 create_app_bundle() {
