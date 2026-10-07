@@ -1,7 +1,8 @@
-name: Build macOS 12 (A2141 验证)
+name: Build macOS 12 (Intel Mac)
 
 # 目的：在 macOS runner 上真实编译，证明 macos12.0 部署目标可用。
-# 适用机型：A2141 = MacBookPro14,1（13" 2017），官方封顶 macOS 12.7.6。
+# 适用机型：Intel Mac（如 MacBookPro16,4 / 16" 2019）。
+# 理由：macOS 12 Monterey 在 Intel 机型上流畅度与发热均优于新系统，且此项目现降为 12.0 部署目标。
 
 on:
   workflow_dispatch:      # 手动触发（推荐第一次这样跑）
@@ -37,26 +38,29 @@ jobs:
           # Xcode 26 的 macOS SDK 覆盖 11-26；16.x 覆盖 10.13+
           echo "无论哪个版本，macOS 12 都在支持范围内。"
 
-      - name: 编译 x86_64（Intel，A2141 需要）
+      - name: 编译 x86_64（Intel，MacBookPro16,4 需要）
         run: |
           set -uo pipefail
-          # 用数组传参，避免中文/空格路径被拆开
-          mapfile -d '' SWIFT_FILES < <(find AppUninstaller -name '*.swift' -print0)
-          echo "Swift 文件数: ${#SWIFT_FILES[@]}"
+          # 注意: 不能用 mapfile -d，macOS runner 的 /bin/bash 是 3.2，没有 mapfile。
+          # 改用 find -exec + xargs 的空分隔符安全传递。
+          SWIFT_LIST=build/sources-x86_64.txt
           mkdir -p build/x86_64
+          find AppUninstaller -name '*.swift' -print0 > build/sources.nul
+          echo "Swift 文件数: $(tr -dc '\0' < build/sources.nul | wc -c)"
+          # tr '\0' '\n' 后 xargs 传参；本仓库路径无空格，安全
+          tr '\0' '\n' < build/sources.nul > "${SWIFT_LIST}"
           # 注意: 不能加 -parse-as-library
           #   AppUninstallerApp.swift 第 3 行有 @main，
           #   该标志要求源码无顶层入口，Xcode 26 的 swiftc 会直接报错。
-          set -o pipefail
-          swiftc -O \
+          xargs swiftc -O \
             -target x86_64-apple-macos12.0 \
             -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
             -o build/x86_64/AppUninstaller \
-            "${SWIFT_FILES[@]}" 2>&1 | tee build/compile-x86_64.log
+            < "${SWIFT_LIST}" 2>&1 | tee build/compile-x86_64.log
           RC=${PIPESTATUS[0]}
           if [ "$RC" -ne 0 ]; then
             echo "### 编译失败 (exit $RC)，错误摘要："
-            grep -E "error:" build/compile-x86_64.log | head -30 || true
+            grep -E "error:" build/compile-x86_64.log | head -40 || true
             exit $RC
           fi
           echo "x86_64 编译成功"
@@ -74,17 +78,18 @@ jobs:
       - name: 编译 arm64（可选，仅为保证不破坏 M 芯片用户）
         run: |
           set -uo pipefail
-          mapfile -d '' SWIFT_FILES < <(find AppUninstaller -name '*.swift' -print0)
           mkdir -p build/arm64
-          swiftc -O \
+          find AppUninstaller -name '*.swift' -print0 > build/sources-arm64.nul
+          tr '\0' '\n' < build/sources-arm64.nul > build/sources-arm64.txt
+          xargs swiftc -O \
             -target arm64-apple-macos12.0 \
             -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
             -o build/arm64/AppUninstaller \
-            "${SWIFT_FILES[@]}" 2>&1 | tee build/compile-arm64.log
+            < build/sources-arm64.txt 2>&1 | tee build/compile-arm64.log
           RC=${PIPESTATUS[0]}
           if [ "$RC" -ne 0 ]; then
             echo "### arm64 编译失败 (exit $RC)："
-            grep -E "error:" build/compile-arm64.log | head -30 || true
+            grep -E "error:" build/compile-arm64.log | head -40 || true
             exit $RC
           fi
           echo "arm64 编译成功"
@@ -130,7 +135,7 @@ jobs:
       - name: 运行产物验证脚本
         run: bash verify_macos12.sh "build/Mac优化大师.app"
 
-      - name: 上传 Intel-only 版本（A2141 直接用这个）
+      - name: 上传 Intel-only 版本（Intel Mac 直接用这个）
         uses: actions/upload-artifact@v4
         with:
           name: MacOptimizer-macos12-intel
