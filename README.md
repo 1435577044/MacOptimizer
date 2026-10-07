@@ -1,20 +1,20 @@
-<p align="center">
-  <img src="generated_icon.png" width="128" height="128" alt="MacOptimizer Logo">
+<p align="center">  
+  <img src="generated_icon.png" width="128" height="128" alt="MacOptimizer Logo">  
 </p>
 
 <h1 align="center">MacOptimizer</h1>
 
-<p align="center">
-  <strong>🚀 A Powerful macOS System Optimization and App Management Tool</strong>
+<p align="center">  
+  <strong>🚀 A Powerful macOS System Optimization and App Management Tool</strong>  
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/platform-macOS%2013.0+-blue.svg" alt="Platform">
-  <img src="https://img.shields.io/badge/Swift-5.9-orange.svg" alt="Swift">
-  <img src="https://img.shields.io/badge/SwiftUI-4.0-purple.svg" alt="SwiftUI">
-  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
-  <img src="https://img.shields.io/badge/version-2.2.0-brightgreen.svg" alt="Version">
-  <img src="https://img.shields.io/badge/i18n-EN%20%7C%20中文-cyan.svg" alt="i18n">
+<p align="center">  
+  <img src="https://img.shields.io/badge/platform-macOS%2013.0+-blue.svg" alt="Platform">  
+  <img src="https://img.shields.io/badge/Swift-5.9-orange.svg" alt="Swift">  
+  <img src="https://img.shields.io/badge/SwiftUI-4.0-purple.svg" alt="SwiftUI">  
+  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">  
+  <img src="https://img.shields.io/badge/version-2.2.0-brightgreen.svg" alt="Version">  
+  <img src="https://img.shields.io/badge/i18n-EN%20%7C%20中文-cyan.svg" alt="i18n">  
 </p>
 
 ---
@@ -23,14 +23,16 @@
 
 MacOptimizer is a system optimization tool designed specifically for macOS, featuring a modern SwiftUI interface with eight core functional modules:
 
-特别推出AI影视与设计平台，专注于AI短剧，AI设计智能体平台。体验地址：https://zaomeng.art
+特别推出AI影视与设计平台，专注于AI短剧，AI设计智能体平台。体验地址：<https://zaomeng.art>
 
 ### 🌐 Multi-Language Support (New!)
+
 - **Chinese & English** - Switch between languages with one click
 - **Persistent Settings** - Language preference is saved automatically
 - **Full Coverage** - All UI elements support localization
 
 ### 🖥️ Console (System Monitor)
+
 - **CPU Usage** - Real-time CPU usage monitoring
 - **Memory Status** - Display used/available memory
 - **Disk Space** - Visual disk usage percentage
@@ -38,6 +40,7 @@ MacOptimizer is a system optimization tool designed specifically for macOS, feat
 - **One-Click Stop** - Quickly terminate unwanted processes
 
 ### 📦 App Uninstaller
+
 - **Smart Scanning** - Automatically detect installed applications
 - **Residual File Detection** - Find all associated residual files:
   - Preferences
@@ -53,6 +56,7 @@ MacOptimizer is a system optimization tool designed specifically for macOS, feat
 - **Move to Trash** - Safe deletion with recovery option
 
 ### 🧹 Junk Cleaner
+
 - **System Cache** - Clean macOS system cache
 - **App Cache** - Clean cache files from various applications
 - **Browser Cache** - Support Safari, Chrome, Firefox, and more
@@ -60,22 +64,26 @@ MacOptimizer is a system optimization tool designed specifically for macOS, feat
 - **Categorized Display** - Group by type, support selective cleaning
 
 ### ⚡ System Optimizer
+
 - **Startup Items** - View and disable startup items
 - **Memory Release** - One-click system memory cleanup
 - **System Acceleration** - Optimize system performance
 
 ### 🔍 Large File Finder
+
 - **Smart Scanning** - Quickly locate space-consuming files
 - **Multi-Directory Scan** - Scan all files in home directory
 - **Visual Display** - Clear file size and location display
 - **Quick Cleanup** - Direct delete or move to trash
 
 ### 🗑️ Trash Manager
+
 - **View Contents** - Browse all files in trash
 - **Space Statistics** - Show trash space usage
 - **One-Click Empty** - Quickly empty trash to free space
 
 ### ✨ Deep Clean
+
 - **Orphaned File Scan** - Scan residual files from uninstalled apps
 - **Smart Recognition** - Auto-identify files not belonging to installed apps
 - **System Protection** - Auto-exclude Apple system files to prevent accidental deletion
@@ -84,6 +92,7 @@ MacOptimizer is a system optimization tool designed specifically for macOS, feat
 - **Safe Deletion** - Files move to trash for recovery
 
 ### 📁 File Explorer
+
 - **Disk Browsing** - Browse entire Mac disk directory structure
 - **Quick Access** - Home, Desktop, Documents, Downloads, Applications, Disk Root
 - **Navigation** - Forward/Back/Parent + Breadcrumb path bar
@@ -96,43 +105,49 @@ MacOptimizer is a system optimization tool designed specifically for macOS, feat
 ---
 
 ## 📸 Screenshots
-<img width="2180" height="1344" alt="image" src="https://github.com/user-attachments/assets/c25c15ae-079e-4054-b3f6-3593e40182f5" />
 
-<img width="2180" height="1344" alt="image" src="https://github.com/user-attachments/assets/482c74a8-be5f-4569-87a3-36291da5e615" />
+![image](https://github.com/user-attachments/assets/c25c15ae-079e-4054-b3f6-3593e40182f5)
 
-<img width="2180" height="1344" alt="image" src="https://github.com/user-attachments/assets/faf31feb-840f-404f-a8a8-3a8c55f0ca45" />
+![image](https://github.com/user-attachments/assets/482c74a8-be5f-4569-87a3-36291da5e615)
 
-<img width="2180" height="1344" alt="image" src="https://github.com/user-attachments/assets/5da494f5-e26d-481b-8226-863e97489f4f" />
+![image](https://github.com/user-attachments/assets/faf31feb-840f-404f-a8a8-3a8c55f0ca45)
 
+![image](https://github.com/user-attachments/assets/5da494f5-e26d-481b-8226-863e97489f4f)
 
 ---
 
 ## 🛠️ Installation & Build
 
 ### System Requirements
+
 - **macOS 12.0 (Monterey)** or later
 - **Apple Silicon (M1/M2/M3/M4)** or Intel (modify build parameters)
 - **Command Line Tools** (Full Xcode not required)
 
-
 ### Download DMG
 
 Download the latest release from [GitHub Releases](https://github.com/ddlmanus/MacOptimizer/releases):
+
 - **Apple Silicon (M1/M2/M3/M4)**: `MacOptimizer_vX.X.X_AppleSilicon.dmg`
 - **Intel**: `MacOptimizer_vX.X.X_Intel.dmg`
 
 ### Build from Source
+
 # 1. Clone repository
-git clone https://github.com/ddlmanus/MacOptimizer.git
+
+git clone <https://github.com/ddlmanus/MacOptimizer.git>  
 cd MacOptimizer
 
 # 2. Run build script
-chmod +x build.sh
+
+chmod +x build.sh  
 ./build.sh
 
 # 3. Launch app
+
 open build/Mac优化大师.app
-```
+
+````
 
 ### Intel Support
 
@@ -143,7 +158,7 @@ For Intel Mac, modify `build.sh`:
 -target arm64-apple-macos12.0
 # To
 -target x86_64-apple-macos12.0
-```
+````
 
 ---
 
@@ -245,8 +260,8 @@ This project is open source under the [MIT License](LICENSE).
 
 ---
 
-<p align="center">
-  Made with ❤️ for macOS
+<p align="center">  
+  Made with ❤️ for macOS  
 </p>
 
 ---
@@ -258,11 +273,13 @@ This project is open source under the [MIT License](LICENSE).
 Mac优化大师是一款专为 macOS 设计的系统优化工具，采用现代化的 SwiftUI 界面，提供八大核心功能模块：
 
 ### 🌐 多语言支持（新功能！）
+
 - **中英双语** - 一键切换界面语言
 - **设置持久化** - 语言偏好自动保存
 - **全覆盖** - 所有界面元素均支持本地化
 
 ### 🖥️ 控制台（系统监控）
+
 - **CPU 占用率** - 实时监控 CPU 使用情况
 - **内存状态** - 显示已用/可用内存
 - **磁盘空间** - 可视化磁盘使用占比
@@ -270,6 +287,7 @@ Mac优化大师是一款专为 macOS 设计的系统优化工具，采用现代�
 - **一键停止进程** - 快速终止不需要的进程
 
 ### 📦 应用卸载
+
 - **智能扫描** - 自动检测已安装的应用程序
 - **残留文件检测** - 发现应用关联的所有残留文件
   - 偏好设置 (Preferences)
@@ -285,6 +303,7 @@ Mac优化大师是一款专为 macOS 设计的系统优化工具，采用现代�
 - **移至废纸篓** - 支持安全删除，可从废纸篓恢复
 
 ### 🧹 垃圾清理
+
 - **系统缓存** - 清理 macOS 系统缓存
 - **应用缓存** - 清理各应用产生的缓存文件
 - **浏览器缓存** - 支持 Safari、Chrome、Firefox 等主流浏览器
@@ -292,22 +311,26 @@ Mac优化大师是一款专为 macOS 设计的系统优化工具，采用现代�
 - **分类展示** - 按类型分组显示，支持选择性清理
 
 ### ⚡ 系统优化
+
 - **启动项管理** - 查看和禁用开机启动项
 - **内存释放** - 一键清理系统内存
 - **系统加速** - 优化系统性能
 
 ### 🔍 大文件查找
+
 - **智能扫描** - 快速定位占用大量空间的文件
 - **多目录扫描** - 扫描主目录下的所有文件
 - **可视化展示** - 清晰展示文件大小和位置
 - **快速清理** - 支持直接删除或移至废纸篓
 
 ### 🗑️ 废纸篓管理
+
 - **查看内容** - 浏览废纸篓中的所有文件
 - **空间统计** - 显示废纸篓占用空间
 - **一键清空** - 快速清空废纸篓释放空间
 
 ### ✨ 深度清理
+
 - **孤立文件扫描** - 扫描已卸载应用的残留文件
 - **智能识别** - 自动识别不属于任何已安装应用的文件
 - **系统保护** - 自动排除 Apple 系统文件，防止误删
@@ -316,6 +339,7 @@ Mac优化大师是一款专为 macOS 设计的系统优化工具，采用现代�
 - **安全删除** - 文件移至废纸篓，可恢复
 
 ### 📁 文件管理
+
 - **磁盘浏览** - 浏览整个 Mac 磁盘目录结构
 - **快捷访问** - 主目录、桌面、文稿、下载、应用程序、磁盘根目录
 - **导航功能** - 前进/后退/上级目录 + 面包屑路径栏
@@ -330,6 +354,7 @@ Mac优化大师是一款专为 macOS 设计的系统优化工具，采用现代�
 ## 🛠️ 安装与构建
 
 ### 系统要求
+
 - **macOS 12.0 (Monterey)** 或更高版本
 - **Apple Silicon (M1/M2/M3/M4)** 或 Intel 芯片（需修改编译参数）
 - **Command Line Tools**（无需安装完整 Xcode）
@@ -351,6 +376,7 @@ brew install --cask ./homebrew/macoptimizer.rb
 ### 下载 DMG
 
 从 [GitHub Releases](https://github.com/ddlmanus/MacOptimizer/releases) 下载最新版本：
+
 - **Apple Silicon (M1/M2/M3/M4)**: `MacOptimizer_vX.X.X_AppleSilicon.dmg`
 - **Intel**: `MacOptimizer_vX.X.X_Intel.dmg`
 
@@ -372,6 +398,7 @@ open build/Mac优化大师.app
 ### Intel 芯片支持
 
 如需在 Intel Mac 上编译，请修改 `build.sh` 中的编译参数：
+
 
 ```bash
 # 将
