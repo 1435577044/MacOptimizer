@@ -237,12 +237,12 @@ EOF
 # 3. 构建 Apple Silicon 版本
 echo -e "${YELLOW}[3/5] 构建 Apple Silicon (arm64) 版本${NC}"
 echo ""
-build_architecture "arm64" "arm64-apple-macos13.0" "Apple Silicon (M芯片)"
+build_architecture "arm64" "arm64-apple-macos12.0" "Apple Silicon (M芯片)"
 
 # 4. 构建 Intel 版本
 echo -e "${YELLOW}[4/5] 构建 Intel (x86_64) 版本${NC}"
 echo ""
-build_architecture "x86_64" "x86_64-apple-macos13.0" "Intel"
+build_architecture "x86_64" "x86_64-apple-macos12.0" "Intel"
 
 # 5. 创建 DMG
 echo -e "${YELLOW}[5/5] 打包 DMG 镜像${NC}"
