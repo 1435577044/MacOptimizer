@@ -144,7 +144,7 @@ mkdir -p "${BUILD_DIR}/app_x86_64"
 echo -e "${YELLOW}[2/7] 编译 Apple Silicon (arm64) 版本...${NC}"
 swiftc \
     -O \
-    -target arm64-apple-macos13.0 \
+    -target arm64-apple-macos12.0 \
     -sdk $(xcrun --sdk macosx --show-sdk-path) \
     -parse-as-library \
     -o "${BUILD_DIR}/arm64/${EXECUTABLE_NAME}" \
@@ -155,7 +155,7 @@ echo -e "${GREEN}✓ Apple Silicon 编译完成${NC}"
 echo -e "${YELLOW}[3/7] 编译 Intel (x86_64) 版本...${NC}"
 swiftc \
     -O \
-    -target x86_64-apple-macos13.0 \
+    -target x86_64-apple-macos12.0 \
     -sdk $(xcrun --sdk macosx --show-sdk-path) \
     -parse-as-library \
     -o "${BUILD_DIR}/x86_64/${EXECUTABLE_NAME}" \
